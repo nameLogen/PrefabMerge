@@ -49,4 +49,5 @@ git push origin v0.1.0
 
 产物：Windows `.exe` + macOS `.dmg`
 
+<img width="1402" height="932" alt="image" src="https://github.com/user-attachments/assets/dc548781-9dbf-42b3-9632-69b3d007445a" />
 
