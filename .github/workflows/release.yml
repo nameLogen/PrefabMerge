@@ -53,8 +53,7 @@ jobs:
           mkdir -p release-assets
           VERSION="${GITHUB_REF_NAME}"
 
-          APP_PATH=$(find src-tauri/target/aarch64-apple-darwin -name "*.app" -type d | head -1 || true)
-          DMG_PATH=$(find src-tauri/target/aarch64-apple-darwin -name "*.dmg" -type f | head -1 || true)
+          APP_PATH=$(find src-tauri/target -name "*.app" -type d | head -1 || true)
 
           if [ -n "$APP_PATH" ]; then
             ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "release-assets/PrefabMerge-${VERSION}-macOS.zip"
@@ -62,11 +61,6 @@ jobs:
           else
             echo "No .app found"
             exit 1
-          fi
-
-          if [ -n "$DMG_PATH" ]; then
-            cp "$DMG_PATH" "release-assets/PrefabMerge-${VERSION}-macOS.dmg"
-            echo "macOS DMG ready"
           fi
 
       - name: Prepare Windows Assets
