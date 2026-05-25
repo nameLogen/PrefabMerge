@@ -30,17 +30,16 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Add macOS targets
+      - name: Add macOS target
         if: runner.os == 'macOS'
-        run: |
-          rustup target add aarch64-apple-darwin x86_64-apple-darwin
+        run: rustup target add aarch64-apple-darwin
 
       - name: Install frontend deps
         run: npm install
 
       - name: Build Tauri App (macOS)
         if: runner.os == 'macOS'
-        run: npm run tauri build -- --target universal-apple-darwin
+        run: npm run tauri build -- --target aarch64-apple-darwin
 
       - name: Build Tauri App (Windows)
         if: runner.os == 'Windows'
@@ -54,8 +53,8 @@ jobs:
           mkdir -p release-assets
           VERSION="${GITHUB_REF_NAME}"
 
-          APP_PATH=$(find src-tauri/target -name "*.app" -type d | head -1 || true)
-          DMG_PATH=$(find src-tauri/target -name "*.dmg" -type f | head -1 || true)
+          APP_PATH=$(find src-tauri/target/aarch64-apple-darwin -name "*.app" -type d | head -1 || true)
+          DMG_PATH=$(find src-tauri/target/aarch64-apple-darwin -name "*.dmg" -type f | head -1 || true)
 
           if [ -n "$APP_PATH" ]; then
             ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "release-assets/PrefabMerge-${VERSION}-macOS.zip"
