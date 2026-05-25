@@ -1,11 +1,21 @@
 use std::process::Command;
 
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+
 use crate::models::{DiffFileInfo, PrefabThreeWay};
 
+#[cfg(windows)]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
+
 fn run_git(repo_path: &str, args: &[&str]) -> Result<String, String> {
-    let output = Command::new("git")
-        .current_dir(repo_path)
-        .args(args)
+    let mut cmd = Command::new("git");
+    cmd.current_dir(repo_path).args(args);
+
+    #[cfg(windows)]
+    cmd.creation_flags(CREATE_NO_WINDOW);
+
+    let output = cmd
         .output()
         .map_err(|e| format!("Failed to execute git: {}", e))?;
 
@@ -59,6 +69,10 @@ pub fn diff_branches(
     left_branch: String,
     right_branch: String,
 ) -> Result<Vec<DiffFileInfo>, String> {
+    if left_branch.is_empty() || right_branch.is_empty() {
+        return Ok(vec![]);
+    }
+
     let output;
     if left_branch == "__local__" && right_branch == "__local__" {
         return Ok(vec![]);
